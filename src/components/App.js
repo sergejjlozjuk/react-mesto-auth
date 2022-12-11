@@ -11,6 +11,7 @@ import EditProfilePopup from './EditProfilePopup'
 import EditAvatarPopup from './EditAvatarPopup'
 import AddPlacePopup from './AddPlacePopup'
 import ConfirmDeletePopup from './ConfirmDeletePopup'
+import InfoTooltip from './InfoTooltip'
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfile] = useState(false)
   const [isAddPlacePopupOpen, setIsAddPlace] = useState(false)
@@ -161,7 +162,8 @@ function App() {
   }, [isOpen])
   return (
     <currentUserContext.Provider value={currentUser}>
-      <Header />
+      <Header buttonName={'Выйти'} />
+      <InfoTooltip></InfoTooltip>
       <Main
         onEditAvatar={handleEditAvatarClick}
         onEditProfile={handleEditProfileClick}

@@ -6,6 +6,7 @@ export default class Header extends React.Component {
     return (
       <header className="header">
         <img className="header__logo" src={logo} alt="Россия" />
+        <button className='header__button'>{this.props.buttonName}</button>
       </header>
     )
   }
