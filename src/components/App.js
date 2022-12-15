@@ -14,8 +14,13 @@ import ConfirmDeletePopup from './ConfirmDeletePopup'
 import Login from './Login'
 import Register from './Register'
 import ProtectedRoute from './ProtectedRoute'
-import { checkToken } from './auth'
-function App() {
+import Auth from '../utils/auth'
+import canceled from '../images/canceled.svg'
+import confirmed from '../images/confirmed.svg'
+import Header from './Header'
+import InfoTooltip from './InfoTooltip'
+
+export default function App() {
   const [isEditProfilePopupOpen, setIsEditProfile] = useState(false)
   const [isAddPlacePopupOpen, setIsAddPlace] = useState(false)
   const [isEditAvatarPopupOpen, setIsEditAvatar] = useState(false)
@@ -31,6 +36,12 @@ function App() {
   })
   const [loggedIn, setLoggedIn] = useState(false)
   const [email, setEmail] = useState('')
+  const [token, setToken] = useState('')
+  const [dataInfoPopup, setDataInfoPopup] = React.useState({
+    text: '',
+    image: '',
+  })
+  const auth = new Auth()
   const history = useHistory()
   function handleConfirmDelete() {
     handleCardDelete(confirmedDeleteCard)
@@ -138,27 +149,60 @@ function App() {
       })
       .catch((err) => console.log(err))
   }
-  function handleAuthorization() {
-    if (localStorage.token) {
-      checkToken(localStorage.getItem('token'))
-        .then((res) => {
-          if (res.ok) {
-            return res.json()
-          }
-          return
-        })
+  function checkAuthorization() {
+    setToken(localStorage.getItem('token'))
+    if (token) {
+      auth
+        .checkToken(token)
         .then((res) => {
           setEmail(res.data.email)
+          setLoggedIn(true)
+          history.push('/')
         })
         .catch((err) => console.log(err))
-      setLoggedIn(true)
-      history.push('/')
-      return
     }
+  }
+  function handleAuthorization(data) {
+    auth
+      .authorization(data)
+      .then((res) => {
+        localStorage.setItem('token', res.token)
+        setLoggedIn(true)
+        history.goForward('/')
+      })
+      .catch((err) => {
+        setIsInfo(true)
+        setDataInfoPopup({
+          text: 'Что-то пошло не так!Попробуйте ещё раз.',
+          image: canceled,
+        })
+        console.log(err)
+      })
+  }
+  function handleRegistration(data) {
+    auth
+      .regisration(data)
+      .then((res) => {
+        setDataInfoPopup({
+          text: 'Вы успешно зарегистрировались!',
+          image: confirmed,
+        })
+        setIsInfo(true)
+        history.push('/sign-in')
+      })
+      .catch((err) => {
+        setDataInfoPopup({
+          text: 'Что-то пошло не так!Попробуйте ещё раз.',
+          image: canceled,
+        })
+        setIsInfo(true)
+        console.log(err)
+      })
   }
   function signOut() {
     localStorage.removeItem('token')
     setLoggedIn(false)
+    setToken('')
     history.push('/sign-in')
   }
   const isOpen =
@@ -169,19 +213,25 @@ function App() {
     isDeletePopupOpen ||
     isInfoPopupOpen
   useEffect(() => {
-    api
-      .getInitialCards()
-      .then((res) => setCards(res))
-      .catch((err) => console.log(err))
-  }, [])
+    if (loggedIn) {
+      api
+        .getInitialCards()
+        .then((res) => {
+          setCards(res)
+        })
+        .catch((err) => console.log(err))
+    }
+  }, [loggedIn])
   useEffect(() => {
-    api
-      .getUserInfo()
-      .then((res) => setCurrenUser(res))
-      .catch((err) => console.log(err))
-  }, [])
+    if (loggedIn) {
+      api
+        .getUserInfo()
+        .then((res) => setCurrenUser(res))
+        .catch((err) => console.log(err))
+    }
+  }, [loggedIn])
   useEffect(() => {
-    handleAuthorization()
+    checkAuthorization()
   })
   useEffect(() => {
     function closeByEscape(evt) {
@@ -198,29 +248,33 @@ function App() {
   }, [isOpen])
   return (
     <currentUserContext.Provider value={currentUser}>
+      <Header email={email} signOut={signOut}></Header>
       <Switch>
         <Route path="/sign-in">
+        <InfoTooltip
+        info={dataInfoPopup}
+        isOpen={isInfoPopupOpen}
+        onClose={handleCloseClickOverlay}
+      ></InfoTooltip>
           <Login
-            buttonName={'Регистрация'}
-            setLoggedIn={setLoggedIn}
-            isOpen={isInfoPopupOpen}
-            setIsInfo={setIsInfo}
-            onClose={handleCloseClickOverlay}
+            handleAuthorization={handleAuthorization}
           ></Login>
         </Route>
         <Route path="/sign-up">
+        <InfoTooltip
+        info={dataInfoPopup}
+        isOpen={isInfoPopupOpen}
+        onClose={handleCloseClickOverlay}
+      ></InfoTooltip>
           <Register
-            buttonName={'Войти'}
-            isOpen={isInfoPopupOpen}
             setIsInfo={setIsInfo}
-            onClose={handleCloseClickOverlay}
+            handleRegistration={handleRegistration}
           ></Register>
         </Route>
         <ProtectedRoute
-          email={email}
-          signOut={signOut}
           loggedIn={loggedIn}
           component={Main}
+          path={'/'}
           onEditAvatar={handleEditAvatarClick}
           onEditProfile={handleEditProfileClick}
           onAddPlace={handleEditPlaceClick}
@@ -260,5 +314,3 @@ function App() {
     </currentUserContext.Provider>
   )
 }
-
-export default App

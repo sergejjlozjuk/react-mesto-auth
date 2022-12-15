@@ -1,5 +1,5 @@
 import React from 'react'
-import FormValidation from './FormValidation'
+import FormValidation from '../utils/FormValidation'
 
 export default function PopupWithForm({
   isOpen,
