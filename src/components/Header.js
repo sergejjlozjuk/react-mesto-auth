@@ -24,7 +24,7 @@ class Header extends React.Component {
             </Route>
             <Route path='/sign-up'>
             <button className="header__button"  onClick={() =>this.handleClick('/sign-in')}>
-            Вход
+            Войти
           </button>
             </Route>
             <Route exact path='/'>

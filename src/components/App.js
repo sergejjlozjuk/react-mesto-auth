@@ -202,6 +202,7 @@ export default function App() {
   function signOut() {
     localStorage.removeItem('token')
     setLoggedIn(false)
+    setEmail('')
     setToken('')
     history.push('/sign-in')
   }
@@ -251,21 +252,9 @@ export default function App() {
       <Header email={email} signOut={signOut}></Header>
       <Switch>
         <Route path="/sign-in">
-        <InfoTooltip
-        info={dataInfoPopup}
-        isOpen={isInfoPopupOpen}
-        onClose={handleCloseClickOverlay}
-      ></InfoTooltip>
-          <Login
-            handleAuthorization={handleAuthorization}
-          ></Login>
+          <Login handleAuthorization={handleAuthorization}></Login>
         </Route>
         <Route path="/sign-up">
-        <InfoTooltip
-        info={dataInfoPopup}
-        isOpen={isInfoPopupOpen}
-        onClose={handleCloseClickOverlay}
-      ></InfoTooltip>
           <Register
             setIsInfo={setIsInfo}
             handleRegistration={handleRegistration}
@@ -285,6 +274,11 @@ export default function App() {
           handleCardDelete={handleCardDelete}
         />
       </Switch>
+      <InfoTooltip
+        info={dataInfoPopup}
+        isOpen={isInfoPopupOpen}
+        onClose={handleCloseClickOverlay}
+      ></InfoTooltip>
       <ConfirmDeletePopup
         isOpen={isDeletePopupOpen}
         onClose={handleCloseClickOverlay}
