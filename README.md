@@ -1,5 +1,6 @@
 
-### Приложение аналог инстаграмма
+### Приложение 'Mesto'. 
+### Позволяют делиться картинками с другими пользователями.
 
 ## Возможности
 * Регистрация пользователя
@@ -18,4 +19,5 @@
 * БЭМ
 * html, css, js
 
-[Ссылка](https://sergejjlozjuk.github.io/react-mesto-auth/)  
+## Ссылка на приложение
+[Mesto](https://sergejjlozjuk.github.io/react-mesto-auth/)  
