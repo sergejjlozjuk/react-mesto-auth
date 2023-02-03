@@ -19,5 +19,4 @@
 * БЭМ
 * html, css, js
 
-## Ссылка на приложение
-[Mesto](https://sergejjlozjuk.github.io/react-mesto-auth/)  
+## Ссылка на приложение: [Mesto](https://sergejjlozjuk.github.io/react-mesto-auth/)  
